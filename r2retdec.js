@@ -115,8 +115,8 @@ if (RegExp('^ptrace:\/\/[0-9]+$').test(binaryPath.trim())) {
 }
 var pdf = r2.cmdj('pdfj');
 if (pdf === null) {
-	// Cannot find any function in current offset
-	process.exit(0);
+      // Cannot find any function in current offset
+      process.exit(0);
 }
 var functionStartAddress = '0x' + pdf.addr.toString(16);
 var functionEndAddress = '0x' + pdf.ops.pop().offset.toString(16);
@@ -136,12 +136,22 @@ try {
       code = rename_functions(code);
       var highlighted_code = highlight(code);
 } catch (e) {
-      highlighted_code = 'Not valid for 64 bit arch. Using pdc instead\n\n';
-      highlighted_code += highlight(r2.cmd('pdc'));
+      highlighted_code = e.message + '\n\n';
+}
+
+function r2print(x) {
+      // console.log(x);
+      const lines = x.split(/\n/g);
+      for (let line of lines) {
+            if (line.length < 1) {
+                  continue;
+            }
+            r2.cmd('echo64 ' + Buffer.from(line).toString('base64'));
+      }
 }
 
 if (a.visual !== true) {
-      console.log(highlighted_code);
+      r2print(highlighted_code);
       process.exit(0);
 }
 
